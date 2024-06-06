@@ -11,6 +11,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
+class UBasePrimaryAttackComponent;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -43,6 +44,10 @@ class AScavangerCharacter : public ACharacter
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
+	
+	/** MeleeAttack Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* MeleeAttackAction;
 
 public:
 	AScavangerCharacter();
@@ -55,6 +60,13 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+
+	/** Called for MeleeAttack input */
+	void MeleeAttack();
+
+	UPROPERTY()
+	UBasePrimaryAttackComponent* MeleeAttackComponent = nullptr;
+	
 			
 
 protected:
