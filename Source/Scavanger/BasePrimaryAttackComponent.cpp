@@ -38,25 +38,40 @@ void UBasePrimaryAttackComponent::TickComponent(float DeltaTime, ELevelTick Tick
 void UBasePrimaryAttackComponent::BasePrimaryAttack()
 {
 	UWorld* world = GetWorld();
-	float sphereRadius = 300.0f;
+	float sphereRadius = 70.0f;
+	float sphereHalfHeightRadius = 5.0f;
 	TArray<AActor*> overlappingActors;
 	AActor* player = GetOwner();
-	FVector playerLocation = player->GetActorLocation();
+	FVector forwardOffset = {60.f, 60.f, 0};
+	FVector playerLocation = player->GetActorLocation() + player->GetActorForwardVector() * forwardOffset;
 
-	UKismetSystemLibrary::SphereOverlapActors(
+	UKismetSystemLibrary::CapsuleOverlapActors(
 		world,
 		playerLocation,
 		sphereRadius,
+		sphereHalfHeightRadius,
 		TArray<TEnumAsByte<EObjectTypeQuery>>(),
 		nullptr,
 		TArray<AActor*>(),
 		overlappingActors
 	);
+	// DrawDebugSphere(world, playerLocation, sphereRadius, 12, FColor::Red, false, 5.0f, 0, 1.0f);
+
+	DrawDebugCapsule(
+		world,
+		playerLocation,
+		sphereHalfHeightRadius,
+		sphereRadius,
+		FQuat::Identity,
+		FColor::Red,
+		false, // true si deseas que la cápsula se dibuje persistentemente
+		5.0f, // Duración que la cápsula se mantendrá dibujada (5 segundos en este caso)
+		0,
+		2.0f // Grosor de la línea
+	);
 
 	for(AActor* Actor : overlappingActors)
 	{
-		DrawDebugSphere(world, playerLocation, sphereRadius, 12, FColor::Red, false, 5.0f, 0, 1.0f);
-
 		if(Actor)
 		{
 			IIDamageable* damageableActor = Cast<IIDamageable>(Actor);
