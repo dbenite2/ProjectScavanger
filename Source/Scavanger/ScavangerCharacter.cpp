@@ -9,6 +9,7 @@
 #include "GameFramework/Controller.h"
 #include "EnhancedInputComponent.h"
 #include "BasePrimaryAttackComponent.h"
+#include "BaseShootAttack.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 
@@ -55,6 +56,7 @@ AScavangerCharacter::AScavangerCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
 	MeleeAttackComponent = CreateDefaultSubobject<UBasePrimaryAttackComponent>(TEXT("BasePrimaryAttack"));
+	ShootAttackComponent = CreateDefaultSubobject<UBaseShootAttack>(TEXT("BaseShootAttack"));
 }
 
 void AScavangerCharacter::BeginPlay()
@@ -92,6 +94,9 @@ void AScavangerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 		// Melee Attack
 		EnhancedInputComponent->BindAction(MeleeAttackAction, ETriggerEvent::Triggered, this, &AScavangerCharacter::MeleeAttack);
+
+		// Shoot Attack
+		EnhancedInputComponent->BindAction(ShootAttackAction, ETriggerEvent::Triggered, this, &AScavangerCharacter::ShootAttack);
 	}
 	else
 	{
@@ -138,4 +143,9 @@ void AScavangerCharacter::Look(const FInputActionValue& Value)
 void AScavangerCharacter::MeleeAttack()
 {
 	MeleeAttackComponent->BasePrimaryAttack();
+}
+
+void AScavangerCharacter::ShootAttack()
+{
+	ShootAttackComponent->BaseShootAttack();
 }

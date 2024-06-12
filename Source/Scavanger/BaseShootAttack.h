@@ -4,17 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "BasePrimaryAttackComponent.generated.h"
-
+#include "BaseShootAttack.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class SCAVANGER_API UBasePrimaryAttackComponent : public UActorComponent
+class SCAVANGER_API UBaseShootAttack : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UBasePrimaryAttackComponent();
+	UBaseShootAttack();
 
 protected:
 	// Called when the game starts
@@ -25,23 +24,33 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION()
-	void BasePrimaryAttack();
-
+	void BaseShootAttack();
+	
 	UPROPERTY(EditAnywhere)
 	UWorld* world = nullptr;
 
 	UPROPERTY(EditAnywhere)
-	float sphereRadius = 70.0f;
+	FHitResult hitResult;
 
 	UPROPERTY(EditAnywhere)
-	float sphereHalfHeightRadius = 5.0f;
+	float range = 500.f;
 
 	UPROPERTY(EditAnywhere)
-	TArray<AActor*> overlappingActors;
+	float damage = 50.f;
 
 	UPROPERTY(EditAnywhere)
 	AActor* player = nullptr;
 
 	UPROPERTY(EditAnywhere)
-	FVector forwardOffset = {60.f, 60.f, 0};		
+	FVector start = {0, 0, 0};
+
+	UPROPERTY(EditAnywhere)
+	FVector end = {0, 0, 0};
+
+	UPROPERTY(EditAnywhere)
+	float maxDistance = 0;
+
+	UPROPERTY(EditAnywhere)
+	FVector offset = {60.f, 60.f, 0};	
+		
 };
