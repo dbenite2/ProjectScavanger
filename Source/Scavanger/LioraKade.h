@@ -9,6 +9,8 @@
 
 class USpringArmComponent;
 class UCameraComponent;
+class UBasePrimaryAttackComponent;
+class UBaseShootAttack;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
@@ -37,6 +39,12 @@ class SCAVANGER_API ALioraKade : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* MeleeAttackAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* BaseShootAction;
+
 public:
 	ALioraKade();
 
@@ -46,6 +54,16 @@ protected:
 	void Move(const FInputActionValue& Value);
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	void MeleeAttack();
+	
+	void ShootAttack();
+
+	UPROPERTY(VisibleAnywhere)
+	UBasePrimaryAttackComponent* MeleeAttackComponent = nullptr;
+
+	UPROPERTY(VisibleAnywhere)
+	UBaseShootAttack* ShootAttackComponent = nullptr;
 
 public:	
 	virtual void Tick(float DeltaTime) override;

@@ -25,32 +25,14 @@ public:
 
 	UFUNCTION()
 	void BaseShootAttack();
-	
-	UPROPERTY(EditAnywhere)
-	UWorld* world = nullptr;
 
 	UPROPERTY(EditAnywhere)
-	FHitResult hitResult;
+	float range;
 
 	UPROPERTY(EditAnywhere)
-	float range = 500.f;
+	float damage;
 
 	UPROPERTY(EditAnywhere)
-	float damage = 50.f;
-
-	UPROPERTY(EditAnywhere)
-	AActor* player = nullptr;
-
-	UPROPERTY(EditAnywhere)
-	FVector start = {0, 0, 0};
-
-	UPROPERTY(EditAnywhere)
-	FVector end = {0, 0, 0};
-
-	UPROPERTY(EditAnywhere)
-	float maxDistance = 0;
-
-	UPROPERTY(EditAnywhere)
-	FVector offset = {60.f, 60.f, 0};	
+	FVector offset;	
 		
 };

@@ -35,57 +35,34 @@ void UBaseShootAttack::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UBaseShootAttack::BaseShootAttack()
 {
-	world = GetWorld();
-
-	if (!world)
-	{
-		UE_LOG(LogTemp, Error, TEXT("World is null!"));
-		return;
-	}
-
-	player = GetOwner();
-	if (!player)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Player is null!"));
-		return;
-	}
-
-	APawn* pawn = Cast<APawn>(player);
+	UWorld* world = GetWorld();
+	FHitResult hitResult;
+	AActor* player = GetOwner();
+	
+	APawn* pawn = Cast<APawn>(player);	
 	if (!pawn)
 	{
 		return;
 	}
-	
-	AController* Controller = pawn->GetController();
 
-	APlayerController* PlayerController = Cast<APlayerController>(pawn->GetController());
+	APlayerController* PlayerController = Cast<APlayerController>(pawn->GetController());	
 	if (!PlayerController)
 	{
-		UE_LOG(LogTemp, Error, TEXT("PlayerController is null!"));
-		return;
-	}
-
-	if (!PlayerController->PlayerCameraManager)
-	{
-		UE_LOG(LogTemp, Error, TEXT("PlayerCameraManager is null!"));
 		return;
 	}
 	
 	const FRotator SpawnRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
-	start = player->GetActorLocation() + player->GetActorForwardVector() * offset;
-	end = start + SpawnRotation.Vector() * range;
-
-	FHitResult HitResult;
+	FVector start = player->GetActorLocation() + player->GetActorForwardVector() * offset;
+	FVector end = start + player->GetActorForwardVector() * range;
 	
-	DrawDebugLine(world, start, end, FColor(255, 0, 0), true);
+	DrawDebugLine(world, start, end, FColor(255, 0, 0), false, 5.f);
 
-	if (world->LineTraceSingleByChannel(HitResult, start, end, ECC_Visibility))
+	if (world->LineTraceSingleByChannel(hitResult, start, end, ECC_Visibility))
 	{
-		UObject* HitObject = HitResult.GetActor();
+		UObject* HitObject = hitResult.GetActor();
 		if (HitObject)
 		{
 			IIDamageable* DamageableActor = Cast<IIDamageable>(HitObject);
-
 			if (DamageableActor)
 			{
 				DamageableActor->TakeDamage(damage);
