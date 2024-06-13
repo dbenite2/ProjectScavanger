@@ -37,11 +37,9 @@ void UBasePrimaryAttackComponent::TickComponent(float DeltaTime, ELevelTick Tick
 
 void UBasePrimaryAttackComponent::BasePrimaryAttack()
 {
-	world = GetWorld();
-	sphereRadius = 70.0f;
-	sphereHalfHeightRadius = 5.0f;
-	player = GetOwner();
-	forwardOffset = {60.f, 60.f, 0};
+	UWorld* world = GetWorld();
+	AActor* player = GetOwner();
+	TArray<AActor*> overlappingActors;
 	FVector playerLocation = player->GetActorLocation() + player->GetActorForwardVector() * forwardOffset;
 
 	UKismetSystemLibrary::CapsuleOverlapActors(

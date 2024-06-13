@@ -28,20 +28,11 @@ public:
 	void BasePrimaryAttack();
 
 	UPROPERTY(EditAnywhere)
-	UWorld* world = nullptr;
+	float sphereRadius;
 
 	UPROPERTY(EditAnywhere)
-	float sphereRadius = 70.0f;
+	float sphereHalfHeightRadius;
 
 	UPROPERTY(EditAnywhere)
-	float sphereHalfHeightRadius = 5.0f;
-
-	UPROPERTY(EditAnywhere)
-	TArray<AActor*> overlappingActors;
-
-	UPROPERTY(EditAnywhere)
-	AActor* player = nullptr;
-
-	UPROPERTY(EditAnywhere)
-	FVector forwardOffset = {60.f, 60.f, 0};		
+	FVector forwardOffset;		
 };

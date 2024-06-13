@@ -72,10 +72,10 @@ protected:
 	/** Called for ShootAttack input */
 	void ShootAttack();
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	UBasePrimaryAttackComponent* MeleeAttackComponent = nullptr;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	UBaseShootAttack* ShootAttackComponent = nullptr;
 	
 			
