@@ -10,6 +10,7 @@
 #include "BaseShootAttack.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "ZeroGravityComponent.h"
 
 // Sets default values
 ALioraKade::ALioraKade()
@@ -46,6 +47,8 @@ ALioraKade::ALioraKade()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
+	ZeroGravityComp = CreateDefaultSubobject<UZeroGravityComponent>(TEXT("ZeroGravity"));
+	
 	MeleeAttackComponent = CreateDefaultSubobject<UBasePrimaryAttackComponent>(TEXT("BasePrimaryAttack"));
 	ShootAttackComponent = CreateDefaultSubobject<UBaseShootAttack>(TEXT("BaseShootAttack"));
 }
