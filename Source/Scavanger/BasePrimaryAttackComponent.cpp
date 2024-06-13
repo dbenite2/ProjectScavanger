@@ -2,7 +2,6 @@
 
 
 #include "BasePrimaryAttackComponent.h"
-
 #include "IDamageable.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -23,7 +22,6 @@ void UBasePrimaryAttackComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
 }
 
 
@@ -52,7 +50,6 @@ void UBasePrimaryAttackComponent::BasePrimaryAttack()
 		TArray<AActor*>(),
 		overlappingActors
 	);
-	// DrawDebugSphere(world, playerLocation, sphereRadius, 12, FColor::Red, false, 5.0f, 0, 1.0f);
 
 	DrawDebugCapsule(
 		world,
@@ -61,8 +58,8 @@ void UBasePrimaryAttackComponent::BasePrimaryAttack()
 		sphereRadius,
 		FQuat::Identity,
 		FColor::Red,
-		false, // true si deseas que la cápsula se dibuje persistentemente
-		5.0f, // Duración que la cápsula se mantendrá dibujada (5 segundos en este caso)
+		false,
+		5.0f, 
 		0,
 		2.0f // Grosor de la línea
 	);

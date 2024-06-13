@@ -6,6 +6,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
 #include "EnhancedInputComponent.h"
+#include "BasePrimaryAttackComponent.h"
+#include "BaseShootAttack.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "ZeroGravityComponent.h"
@@ -47,7 +49,8 @@ ALioraKade::ALioraKade()
 
 	ZeroGravityComp = CreateDefaultSubobject<UZeroGravityComponent>(TEXT("ZeroGravity"));
 	
-
+	MeleeAttackComponent = CreateDefaultSubobject<UBasePrimaryAttackComponent>(TEXT("BasePrimaryAttack"));
+	ShootAttackComponent = CreateDefaultSubobject<UBaseShootAttack>(TEXT("BaseShootAttack"));
 }
 
 // Called when the game starts or when spawned
@@ -78,11 +81,25 @@ void ALioraKade::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 		
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ALioraKade::Move);
+
+		EnhancedInputComponent->BindAction(MeleeAttackAction, ETriggerEvent::Triggered, this, &ALioraKade::MeleeAttack);
+
+		EnhancedInputComponent->BindAction(BaseShootAction, ETriggerEvent::Triggered, this, &ALioraKade::ShootAttack);
 		
 	}
 	else {
 		UE_LOG(LogTemp, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
+}
+
+void ALioraKade::MeleeAttack()
+{
+	MeleeAttackComponent->BasePrimaryAttack();
+}
+
+void ALioraKade::ShootAttack()
+{
+	ShootAttackComponent->BaseShootAttack();
 }
 
 void ALioraKade::Move(const FInputActionValue& Value) {
