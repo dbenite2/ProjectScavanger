@@ -8,6 +8,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "ZeroGravityComponent.h"
 
 // Sets default values
 ALioraKade::ALioraKade()
@@ -43,6 +44,9 @@ ALioraKade::ALioraKade()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
+
+	ZeroGravityComp = CreateDefaultSubobject<UZeroGravityComponent>(TEXT("ZeroGravity"));
+	
 
 }
 

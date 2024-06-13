@@ -3,6 +3,7 @@
 
 #include "ZeroGravityProjectile.h"
 
+#include "ZeroGravityComponent.h"
 #include "Components/SphereComponent.h"
 
 AZeroGravityProjectile::AZeroGravityProjectile() {
@@ -12,18 +13,15 @@ AZeroGravityProjectile::AZeroGravityProjectile() {
 }
 
 void AZeroGravityProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) {
-	if (OtherActor && OtherActor != this)
-	{
-		// Check if the other actor has a primitive component
-		UPrimitiveComponent* OtherPrimitiveComp = Cast<UPrimitiveComponent>(OtherActor->GetRootComponent());
-		if (OtherPrimitiveComp)
+	// Attach ZeroGravityComponent to the hit actor
+	if (OtherActor && OtherActor != this) {
+		// Check if the hit actor has a ZeroGravityComponent
+		UZeroGravityComponent* ZeroGravityComp = OtherActor->FindComponentByClass<UZeroGravityComponent>();
+		if (ZeroGravityComp)
 		{
-			// Apply an upward force to counteract gravity
-			FVector Gravity(0.f, 0.f, -GetWorld()->GetGravityZ());
-			FVector CounteractForce = -Gravity * OtherPrimitiveComp->GetMass();
-
-			OtherPrimitiveComp->AddForce(CounteractForce);
-			UE_LOG(LogTemp, Warning, TEXT("Applied counteracting force to OtherActor: %s"), *OtherActor->GetName());
+			float ZeroGravityDuration = 3.0f; // Example duration
+			ZeroGravityComp->ActivateZeroGravity(ZeroGravityDuration);
+			UE_LOG(LogTemp, Warning, TEXT("ZeroGravityComponent activated on OtherActor: %s"), *OtherActor->GetName());
 		}
 	}
 }

@@ -3,6 +3,7 @@
 
 #include "BaseProjectile.h"
 
+#include "IDamageable.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -33,12 +34,14 @@ ABaseProjectile::ABaseProjectile()
 void ABaseProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) {
 	// Base OnHit method to do damage with the projectile.
 	if (OtherActor && OtherActor != this && OtherComp) {
-		// auto* DamageableActor = Cast<IDamageable>(OtherActor);
-		// if (UKismetSystemLibrary::DoesImplementInterface(DamageableActor, UIDamageable::StaticClass())) {
-			// Execute_TakeDamage(BaseDamage);	
-		// }
+		
+		if (!UKismetSystemLibrary::DoesImplementInterface(OtherActor, UIDamageable::StaticClass())) {
+			return;
+		}
+		IIDamageable* DamageableActor = Cast<IIDamageable>(OtherActor);
+		if (!DamageableActor) return;
+		DamageableActor->TakeDamage(BaseDamage);
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Actor hit: %s"), *OtherActor->GetName());
 
 	Destroy();
 }

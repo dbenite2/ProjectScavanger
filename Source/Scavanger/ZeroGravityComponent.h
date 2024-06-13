@@ -7,22 +7,34 @@
 #include "ZeroGravityComponent.generated.h"
 
 
+class UCharacterMovementComponent;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SCAVANGER_API UZeroGravityComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
-	// Sets default values for this component's properties
-	UZeroGravityComponent();
+	FVector PreviousLocation;
+	FTimerHandle ZeroGravityTimerHandle;
+
+	UPROPERTY()
+	UCharacterMovementComponent* CharacterMovement{nullptr};
+
+	void DeactivateZeroGravity();
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
+	UPROPERTY(EditDefaultsOnly, Category="Gravity Values")
+	float MinGravityValue{0.f};
+
+public:
+	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	// Sets default values for this component's properties
+	UZeroGravityComponent();
 
-		
+	void ActivateZeroGravity(float Duration);
 };
