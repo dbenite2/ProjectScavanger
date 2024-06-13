@@ -8,6 +8,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
 #include "EnhancedInputComponent.h"
+#include "BasePrimaryAttackComponent.h"
+#include "BaseShootAttack.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 
@@ -52,6 +54,9 @@ AScavangerCharacter::AScavangerCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+	MeleeAttackComponent = CreateDefaultSubobject<UBasePrimaryAttackComponent>(TEXT("BasePrimaryAttack"));
+	ShootAttackComponent = CreateDefaultSubobject<UBaseShootAttack>(TEXT("BaseShootAttack"));
 }
 
 void AScavangerCharacter::BeginPlay()
@@ -86,6 +91,12 @@ void AScavangerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AScavangerCharacter::Look);
+
+		// Melee Attack
+		EnhancedInputComponent->BindAction(MeleeAttackAction, ETriggerEvent::Triggered, this, &AScavangerCharacter::MeleeAttack);
+
+		// Shoot Attack
+		EnhancedInputComponent->BindAction(ShootAttackAction, ETriggerEvent::Triggered, this, &AScavangerCharacter::ShootAttack);
 	}
 	else
 	{
@@ -127,4 +138,14 @@ void AScavangerCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void AScavangerCharacter::MeleeAttack()
+{
+	MeleeAttackComponent->BasePrimaryAttack();
+}
+
+void AScavangerCharacter::ShootAttack()
+{
+	ShootAttackComponent->BaseShootAttack();
 }
