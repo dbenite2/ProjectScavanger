@@ -15,8 +15,7 @@ class SCAVANGER_API AZeroGravityProjectile : public ABaseProjectile
 	GENERATED_BODY()
 
 	AZeroGravityProjectile();
-
-	UFUNCTION()
+	
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	
 };
