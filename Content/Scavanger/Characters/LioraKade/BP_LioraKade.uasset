@@ -1,3 +1,8 @@
 version https://git-lfs.github.com/spec/v1
+<<<<<<< SCV-22
+oid sha256:0d5e99f1104e56a6517442bfd464dd08fcace970571a9ed76adb07301caf228c
+size 38940
+=======
 oid sha256:baf82855356d03ed18272faaac2d046f853ccc45850e6e51e889b75aeb63df75
 size 37511
+>>>>>>> main

@@ -57,7 +57,20 @@ ALioraKade::ALioraKade()
 void ALioraKade::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = GetInstigator();
+
+	FVector SpawnLocation = GetMesh()->GetSocketLocation(FName("WeaponSocket"));
+	FRotator SpawnRotation = GetMesh()->GetSocketRotation(FName("WeaponSocket"));
+
+	gun = GetWorld()->SpawnActor<AGun>(GunClass, SpawnLocation, SpawnRotation, SpawnParams);
+
+	if (gun)
+	{
+		gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, FName("WeaponSocket"));
+	}
 }
 
 // Called every frame
@@ -85,6 +98,8 @@ void ALioraKade::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 		EnhancedInputComponent->BindAction(MeleeAttackAction, ETriggerEvent::Triggered, this, &ALioraKade::MeleeAttack);
 
 		EnhancedInputComponent->BindAction(BaseShootAction, ETriggerEvent::Triggered, this, &ALioraKade::ShootAttack);
+
+		EnhancedInputComponent->BindAction(ChangeWeaponAction, ETriggerEvent::Triggered, this, &ALioraKade::ChangeWeapon);
 		
 	}
 	else {
@@ -94,12 +109,47 @@ void ALioraKade::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 void ALioraKade::MeleeAttack()
 {
-	MeleeAttackComponent->BasePrimaryAttack();
+	if(!hasWeapon)
+	{
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance && !AnimInstance->Montage_IsPlaying(ShootMontage))
+		{
+			AnimInstance->Montage_Play(MeleeAttackMontage);
+			MeleeAttackComponent->BasePrimaryAttack();
+		}
+	}
 }
 
 void ALioraKade::ShootAttack()
 {
-	ShootAttackComponent->BaseShootAttack();
+	if(hasWeapon)
+	{
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance && !AnimInstance->Montage_IsPlaying(ShootMontage))
+		{
+			AnimInstance->Montage_Play(ShootMontage);
+		}
+		ShootAttackComponent->BaseShootAttack();
+	}
+}
+
+void ALioraKade::ChangeWeapon()
+{
+	if (WeaponSwitchMontage)
+	{
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance && !AnimInstance->Montage_IsPlaying(WeaponSwitchMontage))
+		{
+			AnimInstance->Montage_Play(WeaponSwitchMontage);
+
+			// Delay the weapon switch until the montage ends
+			// FTimerHandle UnusedHandle;
+			// GetWorldTimerManager().SetTimer(UnusedHandle, this, &ALioraKade::SwitchWeapon, WeaponSwitchMontage->GetPlayLength(), false);
+
+			FTimerHandle LioraHandle;
+			GetWorldTimerManager().SetTimer(LioraHandle, this, &ALioraKade::SwitchWeapon, WeaponSwitchMontage->GetPlayLength(), false);
+		}
+	}
 }
 
 void ALioraKade::Move(const FInputActionValue& Value) {
@@ -110,5 +160,56 @@ void ALioraKade::Move(const FInputActionValue& Value) {
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		AddMovementInput(ForwardDirection, MovementVector.X);
+	}
+}
+
+void ALioraKade::SwitchWeapon()
+{
+	hasWeapon = !hasWeapon;
+
+	const TCHAR* BoolString = hasWeapon ? TEXT("true") : TEXT("false");
+
+	UE_LOG(LogTemp, Log, TEXT("The value of the boolean variable is: %s"), BoolString);
+
+	if(hasWeapon)
+	{
+		sword->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		sword->Destroy(false);
+		sword = nullptr;
+		
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		SpawnParams.Instigator = GetInstigator();
+
+		FVector SpawnLocation = GetMesh()->GetSocketLocation(FName("WeaponSocket"));
+		FRotator SpawnRotation = GetMesh()->GetSocketRotation(FName("WeaponSocket"));
+
+		gun = GetWorld()->SpawnActor<AGun>(GunClass, SpawnLocation, SpawnRotation, SpawnParams);
+
+		if (gun)
+		{
+			gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, FName("WeaponSocket"));
+		}
+	}
+
+	if(!hasWeapon)
+	{
+		gun->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		gun->Destroy(false);
+		gun = nullptr;
+
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		SpawnParams.Instigator = GetInstigator();
+
+		FVector SpawnLocation = GetMesh()->GetSocketLocation(FName("WeaponSocket"));
+		FRotator SpawnRotation = GetMesh()->GetSocketRotation(FName("WeaponSocket"));
+
+		sword = GetWorld()->SpawnActor<ASword>(swordClass, SpawnLocation, SpawnRotation, SpawnParams);
+
+		if (sword)
+		{
+			sword->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, FName("WeaponSocket"));
+		}
 	}
 }

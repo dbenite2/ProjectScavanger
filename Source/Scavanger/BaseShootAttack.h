@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Gun.h"
 #include "Components/ActorComponent.h"
 #include "BaseShootAttack.generated.h"
 
@@ -27,12 +28,15 @@ public:
 	void BaseShootAttack();
 
 	UPROPERTY(EditAnywhere)
-	float range;
+	float range = 500.f;
 
 	UPROPERTY(EditAnywhere)
-	float damage;
+	float damage = 50.f;
 
 	UPROPERTY(EditAnywhere)
-	FVector offset;	
+	FVector offset = {60.f, 60.f, 0};
+
+	// UPROPERTY(EditAnywhere)
+	// AGun * gun  = nullptr;
 		
 };
