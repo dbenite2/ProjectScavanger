@@ -17,9 +17,8 @@ void AZeroGravityProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherAc
 	if (OtherActor && OtherActor != this) {
 		// Check if the hit actor has a ZeroGravityComponent
 		UZeroGravityComponent* ZeroGravityComp = OtherActor->FindComponentByClass<UZeroGravityComponent>();
-		if (ZeroGravityComp)
-		{
-			float ZeroGravityDuration = 3.0f; // Example duration
+		if (ZeroGravityComp) {
+			float ZeroGravityDuration = 3.0f;
 			ZeroGravityComp->ActivateZeroGravity(ZeroGravityDuration);
 			UE_LOG(LogTemp, Warning, TEXT("ZeroGravityComponent activated on OtherActor: %s"), *OtherActor->GetName());
 		}
