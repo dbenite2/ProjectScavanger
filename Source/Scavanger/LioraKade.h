@@ -9,6 +9,7 @@
 #include "Logging/LogMacros.h"
 #include "LioraKade.generated.h"
 
+class UZeroGravityComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UBasePrimaryAttackComponent;
@@ -28,6 +29,9 @@ class SCAVANGER_API ALioraKade : public ACharacter
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ZeroGravity", meta = (AllowPrivateAccess))
+	UZeroGravityComponent* ZeroGravityComp;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* DefaultMappingContext;
