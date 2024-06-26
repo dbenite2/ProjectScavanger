@@ -28,11 +28,11 @@ public:
 	void BasePrimaryAttack();
 
 	UPROPERTY(EditAnywhere)
-	float sphereRadius;
+	float sphereRadius = 70.f;
 
 	UPROPERTY(EditAnywhere)
-	float sphereHalfHeightRadius;
+	float sphereHalfHeightRadius = 35.f;
 
 	UPROPERTY(EditAnywhere)
-	FVector forwardOffset;		
+	FVector forwardOffset = {60.f, 60.f, 0};		
 };

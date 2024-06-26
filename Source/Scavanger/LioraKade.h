@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Gun.h"
+#include "Sword.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "LioraKade.generated.h"
@@ -45,6 +47,9 @@ class SCAVANGER_API ALioraKade : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* BaseShootAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ChangeWeaponAction;
+
 public:
 	ALioraKade();
 
@@ -59,6 +64,8 @@ protected:
 	
 	void ShootAttack();
 
+	void ChangeWeapon();
+
 	UPROPERTY(VisibleAnywhere)
 	UBasePrimaryAttackComponent* MeleeAttackComponent = nullptr;
 
@@ -70,4 +77,31 @@ public:
 	
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	UPROPERTY(BlueprintReadWrite)
+	bool hasWeapon = true;
+
+	UPROPERTY(EditAnywhere)
+	AGun* gun;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	TSubclassOf<class AGun> GunClass;
+
+	UPROPERTY(EditAnywhere)
+	ASword* sword;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	TSubclassOf<class ASword> swordClass;
+
+	UFUNCTION()
+	void SwitchWeapon();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* WeaponSwitchMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* ShootMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* MeleeAttackMontage;
 };
