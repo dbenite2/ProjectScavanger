@@ -9,6 +9,7 @@
 #include "Logging/LogMacros.h"
 #include "LioraKade.generated.h"
 
+class ULife_Component;
 class UZeroGravityComponent;
 class USpringArmComponent;
 class UCameraComponent;
@@ -54,15 +55,12 @@ class SCAVANGER_API ALioraKade : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ChangeWeaponAction;
 
-public:
-	ALioraKade();
-
 protected:
 	virtual void BeginPlay() override;
 	
 	void Move(const FInputActionValue& Value);
 	
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	void MeleeAttack();
 	
@@ -76,11 +74,16 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UBaseShootAttack* ShootAttackComponent = nullptr;
 
-public:	
-	virtual void Tick(float DeltaTime) override;
+public:
+	ALioraKade();
 	
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION()
+	void SwitchWeapon();
+
+	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 	UPROPERTY(BlueprintReadWrite)
 	bool hasWeapon = true;
@@ -89,16 +92,13 @@ public:
 	AGun* gun;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon")
-	TSubclassOf<class AGun> GunClass;
+	TSubclassOf<AGun> GunClass;
 
 	UPROPERTY(EditAnywhere)
 	ASword* sword;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon")
-	TSubclassOf<class ASword> swordClass;
-
-	UFUNCTION()
-	void SwitchWeapon();
+	TSubclassOf<ASword> swordClass;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	UAnimMontage* WeaponSwitchMontage;
@@ -108,4 +108,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	UAnimMontage* MeleeAttackMontage;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	ULife_Component* LifeComponent{nullptr};
 };

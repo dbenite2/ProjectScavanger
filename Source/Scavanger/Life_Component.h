@@ -6,32 +6,33 @@
 #include "Components/ActorComponent.h"
 #include "Life_Component.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLifeChange, int, current, int, max);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SCAVANGER_API ULife_Component : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
-	// Sets default values for this component's properties
-	ULife_Component();
-
 protected:
-	// Called when the game starts
+
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
+public:
+	
+	ULife_Component();
+
+	FOnLifeChange OnLifeChange;
+
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float maxHealth;
+	float MaxHealth{100};
 
 	UPROPERTY(EditDefaultsOnly)
-	float currentHealth;
+	float CurrentHealth{100};
 
 	UFUNCTION(BlueprintCallable)
-	void ModifyHealth(float amount);
+	void ModifyHealth(float Amount);
 
 	UFUNCTION(BlueprintCallable)
 	void ActorDie();

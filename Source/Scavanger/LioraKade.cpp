@@ -10,6 +10,7 @@
 #include "BaseShootAttack.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Life_Component.h"
 #include "ZeroGravityComponent.h"
 
 // Sets default values
@@ -51,6 +52,7 @@ ALioraKade::ALioraKade()
 	
 	MeleeAttackComponent = CreateDefaultSubobject<UBasePrimaryAttackComponent>(TEXT("BasePrimaryAttack"));
 	ShootAttackComponent = CreateDefaultSubobject<UBaseShootAttack>(TEXT("BaseShootAttack"));
+	LifeComponent = CreateDefaultSubobject<ULife_Component>(TEXT("LifeComponent"));
 }
 
 // Called when the game starts or when spawned
