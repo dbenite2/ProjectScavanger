@@ -11,9 +11,15 @@ void UPlayerUI::NativeConstruct() {
 	if (!World) return;
 	const APlayerController* Controller = World->GetFirstPlayerController();
 	if (!Controller) return;
-	const ALioraKade* Player = Cast<ALioraKade>(Controller->GetPawn());
+	ALioraKade* Player = Cast<ALioraKade>(Controller->GetPawn());
 	if (!Player || !Player->LifeComponent) return;
-	Player->LifeComponent->OnLifeChange.AddDynamic(this, &UPlayerUI::OnHealthChange);
+	if (!Player->LifeComponent->OnLifeChange.IsAlreadyBound(this, &UPlayerUI::OnHealthChange)) {
+		Player->LifeComponent->OnLifeChange.AddDynamic(this, &UPlayerUI::OnHealthChange);
+	}
+	if (!Player->OnWeaponChange.IsAlreadyBound(this, &UPlayerUI::OnWeaponChange)) {
+		Player->OnWeaponChange.AddDynamic(this, &UPlayerUI::OnWeaponChange);	
+	}
+	
 }
 
 void UPlayerUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime) {
@@ -31,12 +37,14 @@ void UPlayerUI::OnHealthChange(const int Current, const int Max) {
 	GreenHealthBar->SetRenderScale({(float)Current / float(Max), 1});
 }
 
-void UPlayerUI::OnBulletChange() {
-	// change bullet icon in widget
+void UPlayerUI::OnBulletChange(int BulletIndex) {
+	if (!BulletIcons.IsValidIndex(BulletIndex)) return;
+	BulletType->SetBrushFromTexture(BulletIcons[BulletIndex], true);
 }
 
-void UPlayerUI::OnWeaponChange() {
-	// change weapon icon in widget 
+void UPlayerUI::OnWeaponChange(int WeaponIndex) {
+	if (!WeaponIcons.IsValidIndex(WeaponIndex)) return;
+	CurrentWeapon->SetBrushFromTexture(WeaponIcons[WeaponIndex], true);
 }
 
 

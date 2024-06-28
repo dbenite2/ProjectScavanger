@@ -14,8 +14,7 @@
 #include "ZeroGravityComponent.h"
 
 // Sets default values
-ALioraKade::ALioraKade()
-{
+ALioraKade::ALioraKade() {
 	PrimaryActorTick.bCanEverTick = false; // activate if necessary
 	
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f); // template size, not final
@@ -55,9 +54,7 @@ ALioraKade::ALioraKade()
 	LifeComponent = CreateDefaultSubobject<ULife_Component>(TEXT("LifeComponent"));
 }
 
-// Called when the game starts or when spawned
-void ALioraKade::BeginPlay()
-{
+void ALioraKade::BeginPlay() {
 	Super::BeginPlay();
 
 	FActorSpawnParameters SpawnParams;
@@ -69,17 +66,13 @@ void ALioraKade::BeginPlay()
 
 	gun = GetWorld()->SpawnActor<AGun>(GunClass, SpawnLocation, SpawnRotation, SpawnParams);
 
-	if (gun)
-	{
+	if (gun) {
 		gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, FName("WeaponSocket"));
 	}
 }
 
-// Called every frame
-void ALioraKade::Tick(float DeltaTime)
-{
+void ALioraKade::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
-
 }
 
 void ALioraKade::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
@@ -109,39 +102,30 @@ void ALioraKade::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	}
 }
 
-void ALioraKade::MeleeAttack()
-{
-	if(!hasWeapon)
-	{
+void ALioraKade::MeleeAttack() {
+	if(!hasWeapon) {
 		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-		if (AnimInstance && !AnimInstance->Montage_IsPlaying(ShootMontage))
-		{
+		if (AnimInstance && !AnimInstance->Montage_IsPlaying(ShootMontage)) {
 			AnimInstance->Montage_Play(MeleeAttackMontage);
 			MeleeAttackComponent->BasePrimaryAttack();
 		}
 	}
 }
 
-void ALioraKade::ShootAttack()
-{
-	if(hasWeapon)
-	{
+void ALioraKade::ShootAttack() {
+	if(hasWeapon) {
 		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-		if (AnimInstance && !AnimInstance->Montage_IsPlaying(ShootMontage))
-		{
+		if (AnimInstance && !AnimInstance->Montage_IsPlaying(ShootMontage)) {
 			AnimInstance->Montage_Play(ShootMontage);
 		}
 		ShootAttackComponent->BaseShootAttack();
 	}
 }
 
-void ALioraKade::ChangeWeapon()
-{
-	if (WeaponSwitchMontage)
-	{
+void ALioraKade::ChangeWeapon() {
+	if (WeaponSwitchMontage) {
 		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-		if (AnimInstance && !AnimInstance->Montage_IsPlaying(WeaponSwitchMontage))
-		{
+		if (AnimInstance && !AnimInstance->Montage_IsPlaying(WeaponSwitchMontage)) {
 			AnimInstance->Montage_Play(WeaponSwitchMontage);
 
 			// Delay the weapon switch until the montage ends
@@ -165,16 +149,16 @@ void ALioraKade::Move(const FInputActionValue& Value) {
 	}
 }
 
-void ALioraKade::SwitchWeapon()
-{
+void ALioraKade::SwitchWeapon() {
 	hasWeapon = !hasWeapon;
+
+	int WeaponIndex = hasWeapon ? 0 : 1; // 0: GUN, 1: SWORD
 
 	const TCHAR* BoolString = hasWeapon ? TEXT("true") : TEXT("false");
 
 	UE_LOG(LogTemp, Log, TEXT("The value of the boolean variable is: %s"), BoolString);
 
-	if(hasWeapon)
-	{
+	if(hasWeapon) {
 		sword->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		sword->Destroy(false);
 		sword = nullptr;
@@ -188,14 +172,12 @@ void ALioraKade::SwitchWeapon()
 
 		gun = GetWorld()->SpawnActor<AGun>(GunClass, SpawnLocation, SpawnRotation, SpawnParams);
 
-		if (gun)
-		{
+		if (gun) {
 			gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, FName("WeaponSocket"));
 		}
 	}
 
-	if(!hasWeapon)
-	{
+	if(!hasWeapon) {
 		gun->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		gun->Destroy(false);
 		gun = nullptr;
@@ -209,9 +191,10 @@ void ALioraKade::SwitchWeapon()
 
 		sword = GetWorld()->SpawnActor<ASword>(swordClass, SpawnLocation, SpawnRotation, SpawnParams);
 
-		if (sword)
-		{
+		if (sword) {
 			sword->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, FName("WeaponSocket"));
 		}
 	}
+
+	OnWeaponChange.Broadcast(WeaponIndex);
 }

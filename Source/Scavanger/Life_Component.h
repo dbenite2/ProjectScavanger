@@ -20,8 +20,8 @@ protected:
 public:
 	
 	ULife_Component();
-
-	FOnLifeChange OnLifeChange;
+	
+	UPROPERTY(BlueprintAssignable) FOnLifeChange OnLifeChange;
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 

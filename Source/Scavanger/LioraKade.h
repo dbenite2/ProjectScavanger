@@ -9,6 +9,9 @@
 #include "Logging/LogMacros.h"
 #include "LioraKade.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponChange, int, WeaponIndex);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBulletChange, int, BulletIndex);
+
 class ULife_Component;
 class UZeroGravityComponent;
 class USpringArmComponent;
@@ -18,7 +21,6 @@ class UBaseShootAttack;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
-
 
 UCLASS(Config=Game)
 class SCAVANGER_API ALioraKade : public ACharacter
@@ -55,6 +57,9 @@ class SCAVANGER_API ALioraKade : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ChangeWeaponAction;
 
+	UFUNCTION()
+	void SwitchWeapon();
+
 protected:
 	virtual void BeginPlay() override;
 	
@@ -66,7 +71,7 @@ protected:
 	
 	void ShootAttack();
 
-	void ChangeWeapon();
+	UFUNCTION() void ChangeWeapon();
 
 	UPROPERTY(VisibleAnywhere)
 	UBasePrimaryAttackComponent* MeleeAttackComponent = nullptr;
@@ -76,11 +81,10 @@ protected:
 
 public:
 	ALioraKade();
+
+	UPROPERTY() FOnWeaponChange OnWeaponChange;
 	
 	virtual void Tick(float DeltaTime) override;
-
-	UFUNCTION()
-	void SwitchWeapon();
 
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }

@@ -30,18 +30,24 @@ class SCAVANGER_API UPlayerUI : public UUserWidget
 	UPROPERTY(EditDefaultsOnly, meta=(BindWidget))
 	UImage* BulletType{nullptr};
 
+	UPROPERTY(EditDefaultsOnly, meta=(BindWidget))
+	UImage* WeaponBg{nullptr};
+
+	UPROPERTY(EditDefaultsOnly, meta=(BindWidget))
+	UImage* BulletBg{nullptr};
+
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Options")
-	TArray<UImage*> WeaponIcons;
+	TArray<UTexture2D*> WeaponIcons;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Bullet Options")
-	TArray<UImage*> BulletIcons;
+	TArray<UTexture2D*> BulletIcons;
 
 	UFUNCTION()
 	void OnHealthChange(const int Current, const int Max);
 
 	UFUNCTION()
-	void OnWeaponChange();
+	void OnWeaponChange(int  WeaponIndex);
 
 	UFUNCTION()
-	void OnBulletChange();
+	void OnBulletChange(int BulletIndex);
 };
