@@ -57,6 +57,9 @@ class SCAVANGER_API ALioraKade : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ChangeWeaponAction;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* PauseMenuAction;
+
 	UFUNCTION()
 	void SwitchWeapon();
 

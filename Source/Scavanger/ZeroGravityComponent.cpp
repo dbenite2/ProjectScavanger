@@ -2,14 +2,12 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-// Sets default values for this component's properties
 UZeroGravityComponent::UZeroGravityComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
 
-// Called when the game starts
 void UZeroGravityComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -20,8 +18,6 @@ void UZeroGravityComponent::BeginPlay()
 	}	
 }
 
-
-// Called every frame
 void UZeroGravityComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);

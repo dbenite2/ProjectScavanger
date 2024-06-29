@@ -1,11 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "LioraKadeController.h"
 
 #include "EnhancedInputSubsystems.h"
 #include "PlayerUI.h"
+#include "PauseMenu.h"
 #include "Blueprint/UserWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 void ALioraKadeController::BeginPlay() {
 	Super::BeginPlay();
@@ -17,10 +16,33 @@ void ALioraKadeController::BeginPlay() {
 		UE_LOG(LogTemp, Warning, TEXT("BeginPlay"));
 	}
 
-	if (PlayerWidgetTemplate) {
-		PlayerWidget = CreateWidget<UPlayerUI>(this, PlayerWidgetTemplate);
-		if (PlayerWidget) {
-			PlayerWidget->AddToViewport(0);
-		}
+	if (!PlayerWidgetTemplate) return;
+	PlayerWidget = CreateWidget<UPlayerUI>(this, PlayerWidgetTemplate);
+	if (PlayerWidget) {
+		PlayerWidget->AddToViewport(0);
+	}
+	
+	
+	if (!PauseMenuTemplate) return;
+	PauseMenuWidget = CreateWidget<UPauseMenu>(this, PauseMenuTemplate);
+	if (PauseMenuWidget) {
+		PauseMenuWidget->AddToViewport(1);
+		PauseMenuWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
+
+void ALioraKadeController::ShowPauseMenu() {
+	PauseMenuWidget->SetVisibility(ESlateVisibility::Visible);
+	UGameplayStatics::SetGamePaused(GetWorld(), true);
+	bShowMouseCursor = true;
+	SetInputMode(FInputModeUIOnly());
+}
+
+void ALioraKadeController::UnPauseGame() {
+	bShowMouseCursor = false;
+	PauseMenuWidget->SetVisibility(ESlateVisibility::Hidden);
+	UGameplayStatics::SetGamePaused(GetWorld(), false);
+	SetInputMode(FInputModeGameOnly());
+}
+
+

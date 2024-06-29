@@ -11,6 +11,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Life_Component.h"
+#include "LioraKadeController.h"
 #include "ZeroGravityComponent.h"
 
 // Sets default values
@@ -76,7 +77,7 @@ void ALioraKade::Tick(float DeltaTime) {
 }
 
 void ALioraKade::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
-	if (APlayerController* PlayerController = Cast<APlayerController>(GetController())) {
+	if (ALioraKadeController* PlayerController = Cast<ALioraKadeController>(GetController())) {
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
@@ -84,20 +85,17 @@ void ALioraKade::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	}
 	
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
-		
+
+		ALioraKadeController* PlayerController = Cast<ALioraKadeController>(GetController());
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-		
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ALioraKade::Move);
-
 		EnhancedInputComponent->BindAction(MeleeAttackAction, ETriggerEvent::Triggered, this, &ALioraKade::MeleeAttack);
-
 		EnhancedInputComponent->BindAction(BaseShootAction, ETriggerEvent::Triggered, this, &ALioraKade::ShootAttack);
-
 		EnhancedInputComponent->BindAction(ChangeWeaponAction, ETriggerEvent::Triggered, this, &ALioraKade::ChangeWeapon);
+		EnhancedInputComponent->BindAction(PauseMenuAction, ETriggerEvent::Started, PlayerController, &ALioraKadeController::ShowPauseMenu);
 		
-	}
-	else {
+	} else {
 		UE_LOG(LogTemp, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
 }

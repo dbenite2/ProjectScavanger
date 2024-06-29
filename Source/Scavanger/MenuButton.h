@@ -38,6 +38,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Level System")
 	bool bProgramQuit{false};
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Level System")
+	bool bResumeGame{false};
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Button Text")
 	FText ButtonLabel;
 

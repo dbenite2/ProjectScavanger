@@ -1,6 +1,7 @@
 
 #include "MenuButton.h"
 
+#include "LioraKadeController.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
@@ -37,6 +38,11 @@ void UMenuButton::OnClicked() {
 		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 		UKismetSystemLibrary::QuitGame(GetWorld(),PlayerController, EQuitPreference::Quit, false);
 		return;
+	}
+
+	if (bResumeGame) {
+		ALioraKadeController* Owner = Cast<ALioraKadeController>(GetOwningPlayer());
+		Owner->UnPauseGame();
 	}
 }
 
