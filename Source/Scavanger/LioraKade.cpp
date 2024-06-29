@@ -10,12 +10,13 @@
 #include "BaseShootAttack.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Life_Component.h"
+#include "LioraKadeController.h"
 #include "ZeroGravityComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
 // Sets default values
-ALioraKade::ALioraKade()
-{
+ALioraKade::ALioraKade() {
 	PrimaryActorTick.bCanEverTick = false; // activate if necessary
 	
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f); // template size, not final
@@ -52,11 +53,10 @@ ALioraKade::ALioraKade()
 	
 	MeleeAttackComponent = CreateDefaultSubobject<UBasePrimaryAttackComponent>(TEXT("BasePrimaryAttack"));
 	ShootAttackComponent = CreateDefaultSubobject<UBaseShootAttack>(TEXT("BaseShootAttack"));
+	LifeComponent = CreateDefaultSubobject<ULife_Component>(TEXT("LifeComponent"));
 }
 
-// Called when the game starts or when spawned
-void ALioraKade::BeginPlay()
-{
+void ALioraKade::BeginPlay() {
 	Super::BeginPlay();
 
 	FActorSpawnParameters SpawnParams;
@@ -68,21 +68,17 @@ void ALioraKade::BeginPlay()
 
 	gun = GetWorld()->SpawnActor<AGun>(GunClass, SpawnLocation, SpawnRotation, SpawnParams);
 
-	if (gun)
-	{
+	if (gun) {
 		gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, FName("WeaponSocket"));
 	}
 }
 
-// Called every frame
-void ALioraKade::Tick(float DeltaTime)
-{
+void ALioraKade::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
-
 }
 
 void ALioraKade::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
-	if (APlayerController* PlayerController = Cast<APlayerController>(GetController())) {
+	if (ALioraKadeController* PlayerController = Cast<ALioraKadeController>(GetController())) {
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
@@ -90,46 +86,40 @@ void ALioraKade::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	}
 	
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
-		
+
+		ALioraKadeController* PlayerController = Cast<ALioraKadeController>(GetController());
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-		
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ALioraKade::Move);
-
 		EnhancedInputComponent->BindAction(MeleeAttackAction, ETriggerEvent::Triggered, this, &ALioraKade::MeleeAttack);
-
 		EnhancedInputComponent->BindAction(BaseShootAction, ETriggerEvent::Triggered, this, &ALioraKade::ShootAttack);
-
 		EnhancedInputComponent->BindAction(ChangeWeaponAction, ETriggerEvent::Triggered, this, &ALioraKade::ChangeWeapon);
 
+
 		EnhancedInputComponent->BindAction(ZeroGravityShootAction, ETriggerEvent::Triggered, this, &ALioraKade::ChangeBullet);
+
+		EnhancedInputComponent->BindAction(PauseMenuAction, ETriggerEvent::Started, PlayerController, &ALioraKadeController::ShowPauseMenu);
+
 		
-	}
-	else {
+	} else {
 		UE_LOG(LogTemp, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
 }
 
-void ALioraKade::MeleeAttack()
-{
-	if(!hasWeapon)
-	{
+void ALioraKade::MeleeAttack() {
+	if(!hasWeapon) {
 		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-		if (AnimInstance && !AnimInstance->Montage_IsPlaying(ShootMontage))
-		{
+		if (AnimInstance && !AnimInstance->Montage_IsPlaying(ShootMontage)) {
 			AnimInstance->Montage_Play(MeleeAttackMontage);
 			MeleeAttackComponent->BasePrimaryAttack();
 		}
 	}
 }
 
-void ALioraKade::ShootAttack()
-{
-	if(hasWeapon)
-	{
+void ALioraKade::ShootAttack() {
+	if(hasWeapon) {
 		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-		if (AnimInstance && !AnimInstance->Montage_IsPlaying(ShootMontage))
-		{
+		if (AnimInstance && !AnimInstance->Montage_IsPlaying(ShootMontage)) {
 			AnimInstance->Montage_Play(ShootMontage);
 		}
 
@@ -159,13 +149,10 @@ void ALioraKade::ShootAttack()
 	}
 }
 
-void ALioraKade::ChangeWeapon()
-{
-	if (WeaponSwitchMontage)
-	{
+void ALioraKade::ChangeWeapon() {
+	if (WeaponSwitchMontage) {
 		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-		if (AnimInstance && !AnimInstance->Montage_IsPlaying(WeaponSwitchMontage))
-		{
+		if (AnimInstance && !AnimInstance->Montage_IsPlaying(WeaponSwitchMontage)) {
 			AnimInstance->Montage_Play(WeaponSwitchMontage);
 
 			FTimerHandle LioraHandle;
@@ -193,16 +180,16 @@ void ALioraKade::Move(const FInputActionValue& Value) {
 	}
 }
 
-void ALioraKade::SwitchWeapon()
-{
+void ALioraKade::SwitchWeapon() {
 	hasWeapon = !hasWeapon;
+
+	int WeaponIndex = hasWeapon ? 0 : 1; // 0: GUN, 1: SWORD
 
 	const TCHAR* BoolString = hasWeapon ? TEXT("true") : TEXT("false");
 
 	UE_LOG(LogTemp, Log, TEXT("The value of the boolean variable is: %s"), BoolString);
 
-	if(hasWeapon)
-	{
+	if(hasWeapon) {
 		sword->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		sword->Destroy(false);
 		sword = nullptr;
@@ -216,14 +203,12 @@ void ALioraKade::SwitchWeapon()
 
 		gun = GetWorld()->SpawnActor<AGun>(GunClass, SpawnLocation, SpawnRotation, SpawnParams);
 
-		if (gun)
-		{
+		if (gun) {
 			gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, FName("WeaponSocket"));
 		}
 	}
 
-	if(!hasWeapon)
-	{
+	if(!hasWeapon) {
 		gun->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		gun->Destroy(false);
 		gun = nullptr;
@@ -237,9 +222,10 @@ void ALioraKade::SwitchWeapon()
 
 		sword = GetWorld()->SpawnActor<ASword>(swordClass, SpawnLocation, SpawnRotation, SpawnParams);
 
-		if (sword)
-		{
+		if (sword) {
 			sword->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, FName("WeaponSocket"));
 		}
 	}
+
+	OnWeaponChange.Broadcast(WeaponIndex);
 }

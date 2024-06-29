@@ -23,7 +23,6 @@ class SCAVANGER_API UZeroGravityComponent : public UActorComponent
 	void DeactivateZeroGravity();
 
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, Category="Gravity Values")
@@ -31,9 +30,7 @@ protected:
 
 public:
 	
-	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	// Sets default values for this component's properties
 	UZeroGravityComponent();
 
 	void ActivateZeroGravity(float Duration);
