@@ -11,6 +11,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "ZeroGravityComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
 // Sets default values
 ALioraKade::ALioraKade()
@@ -100,6 +101,8 @@ void ALioraKade::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 		EnhancedInputComponent->BindAction(BaseShootAction, ETriggerEvent::Triggered, this, &ALioraKade::ShootAttack);
 
 		EnhancedInputComponent->BindAction(ChangeWeaponAction, ETriggerEvent::Triggered, this, &ALioraKade::ChangeWeapon);
+
+		EnhancedInputComponent->BindAction(ZeroGravityShootAction, ETriggerEvent::Triggered, this, &ALioraKade::ChangeBullet);
 		
 	}
 	else {
@@ -129,7 +132,30 @@ void ALioraKade::ShootAttack()
 		{
 			AnimInstance->Montage_Play(ShootMontage);
 		}
-		ShootAttackComponent->BaseShootAttack();
+
+		if(ZeroGravityEnable)
+		{
+			if(gravityBullet)
+			{
+				FActorSpawnParameters SpawnParams;
+				FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * offset;
+				const FRotator SpawnRotation = GetActorRotation();
+		
+				zeroGravityProjectile = GetWorld()->SpawnActor<AZeroGravityProjectile>(zeroGravityProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+
+				// zeroGravityProjectile->movementP->AddForce(GetActorForwardVector() * zeroGravityProjectile->movementP->InitialSpeed);
+			}
+			
+			if(!gravityBullet)
+			{
+				ShootAttackComponent->BaseShootAttack();
+			}
+		}
+		else
+		{
+			ShootAttackComponent->BaseShootAttack();
+		}
+		
 	}
 }
 
@@ -142,13 +168,17 @@ void ALioraKade::ChangeWeapon()
 		{
 			AnimInstance->Montage_Play(WeaponSwitchMontage);
 
-			// Delay the weapon switch until the montage ends
-			// FTimerHandle UnusedHandle;
-			// GetWorldTimerManager().SetTimer(UnusedHandle, this, &ALioraKade::SwitchWeapon, WeaponSwitchMontage->GetPlayLength(), false);
-
 			FTimerHandle LioraHandle;
 			GetWorldTimerManager().SetTimer(LioraHandle, this, &ALioraKade::SwitchWeapon, WeaponSwitchMontage->GetPlayLength(), false);
 		}
+	}
+}
+
+void ALioraKade::ChangeBullet()
+{
+	if(ZeroGravityEnable)
+	{
+		gravityBullet = !gravityBullet;
 	}
 }
 

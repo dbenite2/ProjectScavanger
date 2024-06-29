@@ -5,11 +5,16 @@
 
 #include "ZeroGravityComponent.h"
 #include "Components/SphereComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
 AZeroGravityProjectile::AZeroGravityProjectile() {
 	if (CollisionComp) {
 		CollisionComp->OnComponentHit.AddDynamic(this, &AZeroGravityProjectile::OnHit);
 	}
+
+	movementP = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
+	movementP->InitialSpeed = 50000.f;
+	movementP->MaxSpeed = 50000.f;
 }
 
 void AZeroGravityProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) {
