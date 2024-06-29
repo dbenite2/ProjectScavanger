@@ -9,6 +9,10 @@
 #include "Logging/LogMacros.h"
 #include "LioraKade.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponChange, int, WeaponIndex);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBulletChange, int, BulletIndex);
+
+class ULife_Component;
 class UZeroGravityComponent;
 class USpringArmComponent;
 class UCameraComponent;
@@ -17,7 +21,6 @@ class UBaseShootAttack;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
-
 
 UCLASS(Config=Game)
 class SCAVANGER_API ALioraKade : public ACharacter
@@ -54,21 +57,24 @@ class SCAVANGER_API ALioraKade : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ChangeWeaponAction;
 
-public:
-	ALioraKade();
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* PauseMenuAction;
+
+	UFUNCTION()
+	void SwitchWeapon();
 
 protected:
 	virtual void BeginPlay() override;
 	
 	void Move(const FInputActionValue& Value);
 	
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	void MeleeAttack();
 	
 	void ShootAttack();
 
-	void ChangeWeapon();
+	UFUNCTION() void ChangeWeapon();
 
 	UPROPERTY(VisibleAnywhere)
 	UBasePrimaryAttackComponent* MeleeAttackComponent = nullptr;
@@ -76,11 +82,15 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UBaseShootAttack* ShootAttackComponent = nullptr;
 
-public:	
-	virtual void Tick(float DeltaTime) override;
+public:
+	ALioraKade();
+
+	UPROPERTY() FOnWeaponChange OnWeaponChange;
 	
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	virtual void Tick(float DeltaTime) override;
+
+	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 	UPROPERTY(BlueprintReadWrite)
 	bool hasWeapon = true;
@@ -89,16 +99,13 @@ public:
 	AGun* gun;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon")
-	TSubclassOf<class AGun> GunClass;
+	TSubclassOf<AGun> GunClass;
 
 	UPROPERTY(EditAnywhere)
 	ASword* sword;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon")
-	TSubclassOf<class ASword> swordClass;
-
-	UFUNCTION()
-	void SwitchWeapon();
+	TSubclassOf<ASword> swordClass;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	UAnimMontage* WeaponSwitchMontage;
@@ -108,4 +115,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	UAnimMontage* MeleeAttackMontage;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	ULife_Component* LifeComponent{nullptr};
 };
