@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Gun.h"
 #include "Sword.h"
+#include "ZeroGravityProjectile.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "LioraKade.generated.h"
@@ -57,11 +58,19 @@ class SCAVANGER_API ALioraKade : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ChangeWeaponAction;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ZeroGravityShootAction;
+
+public:
+	ALioraKade();
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* PauseMenuAction;
 
 	UFUNCTION()
 	void SwitchWeapon();
+
 
 protected:
 	virtual void BeginPlay() override;
@@ -75,6 +84,8 @@ protected:
 	void ShootAttack();
 
 	UFUNCTION() void ChangeWeapon();
+
+	void ChangeBullet();
 
 	UPROPERTY(VisibleAnywhere)
 	UBasePrimaryAttackComponent* MeleeAttackComponent = nullptr;
@@ -116,6 +127,23 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	UAnimMontage* MeleeAttackMontage;
 
+
+	UPROPERTY()
+	bool ZeroGravityEnable = false;
+
+	UPROPERTY()
+	bool gravityBullet = false;
+
+	UPROPERTY(EditAnywhere)
+	FVector offset = {60.f, 60.f, 0};
+
+	UPROPERTY(EditAnywhere)
+	AZeroGravityProjectile* zeroGravityProjectile;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	TSubclassOf<class AZeroGravityProjectile> zeroGravityProjectileClass;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	ULife_Component* LifeComponent{nullptr};
+
 };

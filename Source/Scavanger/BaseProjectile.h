@@ -29,7 +29,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Movement, meta=(AllowPrivateAccess="true"))
 	UProjectileMovementComponent* ProjectileMovement{nullptr};
 
-	UPROPERTY(VisibleDefaultsOnly, Category=Projectile)
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category=Projectile)
 	UStaticMeshComponent* MeshComponent{nullptr};
 
 	

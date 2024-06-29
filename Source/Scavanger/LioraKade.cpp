@@ -13,6 +13,7 @@
 #include "Life_Component.h"
 #include "LioraKadeController.h"
 #include "ZeroGravityComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
 // Sets default values
 ALioraKade::ALioraKade() {
@@ -93,7 +94,12 @@ void ALioraKade::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 		EnhancedInputComponent->BindAction(MeleeAttackAction, ETriggerEvent::Triggered, this, &ALioraKade::MeleeAttack);
 		EnhancedInputComponent->BindAction(BaseShootAction, ETriggerEvent::Triggered, this, &ALioraKade::ShootAttack);
 		EnhancedInputComponent->BindAction(ChangeWeaponAction, ETriggerEvent::Triggered, this, &ALioraKade::ChangeWeapon);
+
+
+		EnhancedInputComponent->BindAction(ZeroGravityShootAction, ETriggerEvent::Triggered, this, &ALioraKade::ChangeBullet);
+
 		EnhancedInputComponent->BindAction(PauseMenuAction, ETriggerEvent::Started, PlayerController, &ALioraKadeController::ShowPauseMenu);
+
 		
 	} else {
 		UE_LOG(LogTemp, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
@@ -116,7 +122,30 @@ void ALioraKade::ShootAttack() {
 		if (AnimInstance && !AnimInstance->Montage_IsPlaying(ShootMontage)) {
 			AnimInstance->Montage_Play(ShootMontage);
 		}
-		ShootAttackComponent->BaseShootAttack();
+
+		if(ZeroGravityEnable)
+		{
+			if(gravityBullet)
+			{
+				FActorSpawnParameters SpawnParams;
+				FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * offset;
+				const FRotator SpawnRotation = GetActorRotation();
+		
+				zeroGravityProjectile = GetWorld()->SpawnActor<AZeroGravityProjectile>(zeroGravityProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+
+				// zeroGravityProjectile->movementP->AddForce(GetActorForwardVector() * zeroGravityProjectile->movementP->InitialSpeed);
+			}
+			
+			if(!gravityBullet)
+			{
+				ShootAttackComponent->BaseShootAttack();
+			}
+		}
+		else
+		{
+			ShootAttackComponent->BaseShootAttack();
+		}
+		
 	}
 }
 
@@ -126,13 +155,17 @@ void ALioraKade::ChangeWeapon() {
 		if (AnimInstance && !AnimInstance->Montage_IsPlaying(WeaponSwitchMontage)) {
 			AnimInstance->Montage_Play(WeaponSwitchMontage);
 
-			// Delay the weapon switch until the montage ends
-			// FTimerHandle UnusedHandle;
-			// GetWorldTimerManager().SetTimer(UnusedHandle, this, &ALioraKade::SwitchWeapon, WeaponSwitchMontage->GetPlayLength(), false);
-
 			FTimerHandle LioraHandle;
 			GetWorldTimerManager().SetTimer(LioraHandle, this, &ALioraKade::SwitchWeapon, WeaponSwitchMontage->GetPlayLength(), false);
 		}
+	}
+}
+
+void ALioraKade::ChangeBullet()
+{
+	if(ZeroGravityEnable)
+	{
+		gravityBullet = !gravityBullet;
 	}
 }
 
